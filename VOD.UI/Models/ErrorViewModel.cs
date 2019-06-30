@@ -1,5 +1,3 @@
-using System;
-
 namespace VOD.UI.Models
 {
     public class ErrorViewModel
