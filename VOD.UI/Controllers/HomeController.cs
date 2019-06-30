@@ -3,15 +3,27 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using VOD.Common.Entities;
 using VOD.UI.Models;
 
 namespace VOD.UI.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly SignInManager<VODUser> _signInManager;
+
+        public HomeController(SignInManager<VODUser> signInManager)
+        {
+            _signInManager = signInManager;
+        }
         public IActionResult Index()
         {
+            if (!_signInManager.IsSignedIn(User))
+            {
+                return RedirectToPage("/Account/Login", new { Area = "Identity" });
+            }
             return View();
         }
 
