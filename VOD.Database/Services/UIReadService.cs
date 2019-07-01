@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using VOD.Common.Entities;
@@ -28,6 +28,7 @@ namespace VOD.Database.Services
 
         public async Task<IEnumerable<Course>> GetCourses(string userId)
         {
+            _db.Include<Course, Module>();
             var userCourses = await _db.GetAsync<UserCourse>(uc => uc.UserId.Equals(userId));
             return userCourses.Select(c => c.Course);
         }

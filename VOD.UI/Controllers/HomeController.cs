@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -23,7 +23,8 @@ namespace VOD.UI.Controllers
             {
                 return RedirectToPage("/Account/Login", new { Area = "Identity" });
             }
-            return View();
+            //return View();
+            return RedirectToAction("Dashboard", "Membership");
         }
 
         public IActionResult Privacy()
