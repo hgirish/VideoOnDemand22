@@ -22,7 +22,7 @@ namespace VOD.Database.Services
             return await _db.Set<TEntity>().AnyAsync(expression);
         }
 
-        public async  Task<List<TEntity>> GetAsync<TEntity>() where TEntity : class
+        public async Task<List<TEntity>> GetAsync<TEntity>() where TEntity : class
         {
             return await _db.Set<TEntity>().ToListAsync();
         }

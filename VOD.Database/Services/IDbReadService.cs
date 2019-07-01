@@ -8,7 +8,7 @@ namespace VOD.Database.Services
     public interface IDbReadService
     {
         Task<List<TEntity>> GetAsync<TEntity>() where TEntity : class;
-        Task<List<TEntity>> GetAsync<TEntity>(Expression<Func<TEntity, bool>> expression) 
+        Task<List<TEntity>> GetAsync<TEntity>(Expression<Func<TEntity, bool>> expression)
             where TEntity : class;
         Task<TEntity> SingleAsync<TEntity>(Expression<Func<TEntity, bool>> expression)
             where TEntity : class;
