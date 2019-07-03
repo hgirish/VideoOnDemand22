@@ -95,7 +95,9 @@ namespace VOD.UI.Controllers
                     NextVideoId = nextId,
                     PreviousVideoId = previousId,
                     NextVideoThumbnail = nextThumb,
-                    NextVideoTitle = nextTilte
+                    NextVideoTitle = nextTilte,
+                    CurrentVideoThumbnail = video.Thumbnail,
+                    CurrentVideoTitle = video.Title
                 }
             };
 

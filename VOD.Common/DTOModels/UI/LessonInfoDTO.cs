@@ -1,4 +1,4 @@
-﻿namespace VOD.Common.DTOModels.UI
+namespace VOD.Common.DTOModels.UI
 {
     public class LessonInfoDTO
     {
@@ -8,5 +8,7 @@
         public int NextVideoId { get; set; }
         public string NextVideoTitle { get; set; }
         public string NextVideoThumbnail { get; set; }
+        public string CurrentVideoTitle { get; set; }
+        public string CurrentVideoThumbnail { get; set; }
     }
 }

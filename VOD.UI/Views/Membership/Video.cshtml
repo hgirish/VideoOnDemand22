@@ -1,7 +1,36 @@
-﻿
+@model VideoViewModel
+
 @{
-    ViewData["Title"] = "Video";
+  ViewData["Title"] = "Video";
 }
 
-<h1>Video</h1>
+<div class="row small-bottom-margin">
+  <div class="col-sm-12">
+    <a asp-action="Course"
+       asp-route-id="@Model.Course.CourseId"
+       class="btn btn-primary no-border-radius no-left-padding">
+      <i class="material-icons vertical-align no-left-margin">keyboard_arrow_left</i>
+      <span class="vertical-align">Back to @Model.Course.CourseTitle</span>
+    </a>
+  </div>
+</div>
 
+<div class="row">
+  <div class="col-sm-9">
+    @if (Model != null && Model.Course != null)
+    {
+    <partial name="_VideoPlayerPartial" model="@Model" />
+    }
+    
+  </div>
+  <div class="col-sm-3">
+    @if(Model != null && Model.LessonInfo != null)
+    {
+      <partial name="_VideoComingUpPartial" model="@Model.LessonInfo" />
+    }
+    @if (Model.Instructor != null)
+    {
+      <partial name="_InstructorBioPartial" model="@Model.Instructor" />
+    }
+  </div>
+</div>
