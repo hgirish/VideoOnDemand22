@@ -1,0 +1,18 @@
+﻿@model  DashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<h1>Dashboard</h1>
+
+<hr />
+
+@foreach (var dashboardRow in Model.Courses)
+{
+    <div class="row">
+        @foreach (var course in dashboardRow)
+        {
+            <partial name="_CourseCardPartial" model="@course" />
+        }
+    </div>
+}
