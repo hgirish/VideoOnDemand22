@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,6 +20,17 @@ namespace VOD.Database.Services
         public async Task<bool> AnyAsync<TEntity>(Expression<Func<TEntity, bool>> expression) where TEntity : class
         {
             return await _db.Set<TEntity>().AnyAsync(expression);
+        }
+
+        public (int courses, int downloads, int instructors, int modules, int videos, int users) Count()
+        {
+            return (
+                 courses: _db.Courses.Count(),
+                 downloads: _db.Downloads.Count(),
+                 instructors: _db.Instructors.Count(),
+                 modules: _db.Modules.Count(),
+                 videos: _db.Videos.Count(),
+                 users: _db.Users.Count());
         }
 
         public async Task<List<TEntity>> GetAsync<TEntity>() where TEntity : class

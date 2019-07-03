@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using VOD.Database.Contexts;
 using VOD.Common.Entities;
+using VOD.Database.Services;
 
 namespace VOD.Admin
 {
@@ -41,6 +42,8 @@ namespace VOD.Admin
 
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
+            services.AddScoped<IDbReadService, DbReadService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
