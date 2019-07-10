@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -13,23 +11,23 @@ namespace VOD.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class InstructorsController : ControllerBase
+    public class CoursesController : ControllerBase
     {
         private readonly IAdminService _db;
         private readonly LinkGenerator _linkGenerator;
 
-        public InstructorsController(IAdminService db, LinkGenerator linkGenerator)
+        public CoursesController(IAdminService db, LinkGenerator linkGenerator)
         {
             _db = db;
             _linkGenerator = linkGenerator;
         }
 
         [HttpGet()]
-        public async Task<ActionResult<List<InstructorDTO>>> Get(bool include = false)
+        public async Task<ActionResult<List<CourseDTO>>> Get(bool include = false)
         {
             try
             {
-                return await _db.GetAsync<Instructor, InstructorDTO>(include);
+                return await _db.GetAsync<Course, CourseDTO>(include);
             }
             catch 
             {
@@ -37,11 +35,11 @@ namespace VOD.API.Controllers
             }
         }
         [HttpGet("{id:int}")]
-        public async Task<ActionResult<InstructorDTO>> Get(int id, bool include = false)
+        public async Task<ActionResult<CourseDTO>> Get(int id, bool include = false)
         {
             try
             {
-                var dto = await _db.SingleAsync<Instructor, InstructorDTO>(s =>
+                var dto = await _db.SingleAsync<Course, CourseDTO>(s =>
                 s.Id.Equals(id), include);
                 if (dto == null)
                 {
@@ -56,7 +54,7 @@ namespace VOD.API.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<InstructorDTO>> Post(InstructorDTO model)
+        public async Task<ActionResult<CourseDTO>> Post(CourseDTO model)
         {
             try
             {
@@ -64,16 +62,24 @@ namespace VOD.API.Controllers
                 {
                     return BadRequest("No entity provided");
                 }
-                var id = await _db.CreateAsync<InstructorDTO, Instructor>(model);
-
-                var dto = await _db.SingleAsync<Instructor, InstructorDTO>(s =>
+                var exists = await _db.AnyAsync<Instructor>(a => a.Id.Equals(model.InstructorId));
+                if (!exists)
+                {
+                    return NotFound("Could not find related entity");
+                }
+                var id = await _db.CreateAsync<CourseDTO, Course>(model);
+                if (id < 1)
+                {
+                    return BadRequest("Unable to add the entity");
+                }
+                var dto = await _db.SingleAsync<Course, CourseDTO>(s =>
                 s.Id.Equals(id));
 
                 if (dto == null)
                 {
                     return BadRequest("Unable to add the entity");
                 }
-                var uri = _linkGenerator.GetPathByAction("Get", "Instructors", new { id });
+                var uri = _linkGenerator.GetPathByAction("Get", "Courses", new { id });
                 return Created(uri, dto);
                 
             }
@@ -84,7 +90,7 @@ namespace VOD.API.Controllers
         }
 
         [HttpPut("{id:int}")]
-        public async Task<ActionResult> Put(int id, InstructorDTO model)
+        public async Task<ActionResult> Put(int id, CourseDTO model)
         {
             try
             {
@@ -96,16 +102,26 @@ namespace VOD.API.Controllers
                 {
                     return BadRequest("Differing ids");
                 }
-                var exists = await _db.AnyAsync< Instructor>(a => a.Id.Equals(id));
+                var exists = await _db.AnyAsync<Instructor>(a => a.Id.Equals(model.InstructorId));
+                if (!exists)
+                {
+                    return NotFound("Could not find related entity");
+                }
+
+                 exists = await _db.AnyAsync< Course>(a => a.Id.Equals(id));
                 if (!exists)
                 {
                     return NotFound("Could not find entity");
                 }
-                var success = await _db.UpdateAsync<InstructorDTO, Instructor>(model);
+                var success = await _db.UpdateAsync<CourseDTO, Course>(model);
                 if (success)
                 {
                     return NoContent();
                 }
+               
+                    
+               
+
             }
             catch
             {
@@ -119,7 +135,7 @@ namespace VOD.API.Controllers
         {
             try
             {
-                var exists = await _db.AnyAsync<Instructor>(a =>
+                var exists = await _db.AnyAsync<Course>(a =>
                 a.Id.Equals(id));
 
                 if (!exists)
@@ -127,7 +143,7 @@ namespace VOD.API.Controllers
                     return BadRequest("Could not find entity");
                 }
 
-                var success = await _db.DeleteAsync<Instructor>(d =>
+                var success = await _db.DeleteAsync<Course>(d =>
                 d.Id.Equals(id));
                 if (success)
                 {
