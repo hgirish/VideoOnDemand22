@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
@@ -10,7 +10,12 @@ namespace VOD.Common.Services
 {
     public interface IHttpClientFactoryService
     {
-        Task<List<TResponse>> GetListAsync<TResponse>(string uri, string serviceName, string token = "") where TResponse : class;
+        Task<List<TResponse>> GetListAsync<TResponse>(string uri
+            , string serviceName, string token = "") where TResponse : class;
+
+        Task<TResponse> GetAsync<TResponse>(string uri,
+            string serviceName, string token = "")
+            where TResponse : class;
     }
     public class HttpClientFactoryService: IHttpClientFactoryService
     {
@@ -39,6 +44,27 @@ namespace VOD.Common.Services
                 return result;
             }
             catch 
+            {
+
+                throw;
+            }
+        }
+
+        public async  Task<TResponse> GetAsync<TResponse>(string uri, string serviceName, string token = "") where TResponse : class
+        {
+            try
+            {
+                if (new string[] { uri, serviceName }.IsNullOrEmptyOrWhiteSpace())
+                {
+                    throw new HttpResponseException(HttpStatusCode.NotFound,
+                        "Could not find the resource");
+                }
+                var httpClient = _httpClientFactory.CreateClient(serviceName);
+                var result = await httpClient.GetAsync<TResponse,string>(
+                    uri.ToLower(), _cancellationToken,null, token);
+                return result;
+            }
+            catch
             {
 
                 throw;

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
@@ -112,6 +112,32 @@ namespace VOD.Common.Extensions
                 }
             }
             catch 
+            {
+
+                throw;
+            }
+        }
+
+        public static async Task<TResponse> GetAsync<TResponse,TRequest>(
+           this HttpClient client, string url,
+           CancellationToken cancellationToken,TRequest content, string token = "")
+        {
+            try
+            {
+                var requestMessage = url.CreateRequestHeaders(HttpMethod.Get, token);
+                if (content != null)
+                {
+                    await requestMessage.CreateRequestContent(content);
+                }
+                using (var response = await client.SendAsync(requestMessage,
+                    HttpCompletionOption.ResponseHeadersRead, cancellationToken))
+                {
+                    var stream = await response.Content.ReadAsStreamAsync();
+                    await response.CheckStatusCodes();
+                    return stream.ReadAndDeserializeFromJson<TResponse>();
+                }
+            }
+            catch
             {
 
                 throw;
