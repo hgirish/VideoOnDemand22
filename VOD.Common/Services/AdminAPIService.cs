@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -8,7 +8,7 @@ namespace VOD.Common.Services
     public class AdminAPIService : IAdminService
     {
         private readonly IHttpClientFactoryService _http;
-        Dictionary<string, object> _properties;
+        Dictionary<string, object> _properties = new Dictionary<string, object>();
 
         public AdminAPIService(IHttpClientFactoryService http)
         {

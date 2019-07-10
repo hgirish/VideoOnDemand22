@@ -49,7 +49,7 @@ namespace VOD.Admin
             services.AddScoped<IDbReadService, DbReadService>();
             services.AddScoped<IDbWriteService, DbWriteService>();
             services.AddScoped<IUserService, UserService>();
-            services.AddScoped<IAdminService, AdminEFService>();
+            services.AddScoped<IAdminService, AdminAPIService>();
 
             services.AddAutoMapper(
                 typeof(Startup),

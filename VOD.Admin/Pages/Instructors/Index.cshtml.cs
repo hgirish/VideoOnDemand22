@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -28,8 +29,9 @@ namespace VOD.Admin.Pages.Instructors
                 Items = await _db.GetAsync<Instructor, InstructorDTO>(true);
                 return Page();
             }
-            catch 
+            catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
                 Alert = "You do not have access to this page.";
                 return RedirectToPage("/Index");
             }
