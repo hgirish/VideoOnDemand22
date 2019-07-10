@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace VOD.Common.Services
 {
-  public  interface IAdminService
+    public  interface IAdminService
     {
         Task<List<TDestination>> GetAsync<TSource, TDestination>(
             bool include = false)

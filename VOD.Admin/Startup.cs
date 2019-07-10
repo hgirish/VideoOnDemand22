@@ -12,6 +12,7 @@ using VOD.Common.Entities;
 using VOD.Database.Services;
 using VOD.Common.Services;
 using AutoMapper;
+using System.Net.Http;
 
 namespace VOD.Admin
 {
@@ -58,6 +59,18 @@ namespace VOD.Admin
                 typeof(Video),
                 typeof(Download)
                 );
+
+            services.AddHttpClient("AdminClient", client =>
+            {
+                client.BaseAddress = new System.Uri("http://localhost:6600");
+                client.Timeout = new System.TimeSpan(0, 0, 30);
+                client.DefaultRequestHeaders.Clear();
+            }).ConfigurePrimaryHttpMessageHandler(handler =>
+            new HttpClientHandler
+            {
+                AutomaticDecompression = System.Net.DecompressionMethods.GZip
+            });
+            services.AddScoped<IHttpClientFactoryService, HttpClientFactoryService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
