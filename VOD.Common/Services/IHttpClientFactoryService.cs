@@ -16,6 +16,18 @@ namespace VOD.Common.Services
         Task<TResponse> GetAsync<TResponse>(string uri,
             string serviceName, string token = "")
             where TResponse : class;
+
+        Task<TResponse> PostAsync<TRequest, TResponse>(TRequest content,
+            string uri,
+           string serviceName, string token = "")
+           where TResponse : class where TRequest:class;
+
+        Task<TResponse> PutAsync<TRequest, TResponse>(TRequest content,
+           string uri,
+          string serviceName, string token = "")
+          where TResponse : class where TRequest : class;
+
+        Task<string> DeleteAsync(string uri, string serviceName, string token = "");
     }
     public class HttpClientFactoryService: IHttpClientFactoryService
     {
@@ -62,6 +74,72 @@ namespace VOD.Common.Services
                 var httpClient = _httpClientFactory.CreateClient(serviceName);
                 var result = await httpClient.GetAsync<TResponse,string>(
                     uri.ToLower(), _cancellationToken,null, token);
+                return result;
+            }
+            catch
+            {
+
+                throw;
+            }
+        }
+
+        public async  Task<TResponse> PostAsync<TRequest, TResponse>(TRequest content, string uri, string serviceName, string token = "")
+            where TRequest : class
+            where TResponse : class
+        {
+            try
+            {
+                if (new string[] { uri, serviceName }.IsNullOrEmptyOrWhiteSpace())
+                {
+                    throw new HttpResponseException(HttpStatusCode.NotFound,
+                        "Could not find the resource");
+                }
+                var httpClient = _httpClientFactory.CreateClient(serviceName);
+                var result = await httpClient.PostAsync<TRequest, TResponse>(
+                    uri.ToLower(),content, _cancellationToken,  token);
+                return result;
+            }
+            catch
+            {
+
+                throw;
+            }
+        }
+
+        public async Task<TResponse> PutAsync<TRequest, TResponse>(TRequest content, string uri, string serviceName, string token = "")
+            where TRequest : class
+            where TResponse : class
+        {
+            try
+            {
+                if (new string[] { uri, serviceName }.IsNullOrEmptyOrWhiteSpace())
+                {
+                    throw new HttpResponseException(HttpStatusCode.NotFound,
+                        "Could not find the resource");
+                }
+                var httpClient = _httpClientFactory.CreateClient(serviceName);
+                var result = await httpClient.PutAsync<TRequest, TResponse>(
+                    uri.ToLower(), content, _cancellationToken, token);
+                return result;
+            }
+            catch
+            {
+
+                throw;
+            }
+        }
+
+        public async Task<string> DeleteAsync(string uri, string serviceName, string token = "")
+        {
+            try
+            {
+                if (new string[] { uri, serviceName }.IsNullOrEmptyOrWhiteSpace())
+                {
+                    throw new HttpResponseException(HttpStatusCode.NotFound,
+                        "Could not find the resource");
+                }
+                var httpClient = _httpClientFactory.CreateClient(serviceName);
+                var result = await httpClient.DeleteAsync(uri.ToLower(), _cancellationToken, token);
                 return result;
             }
             catch

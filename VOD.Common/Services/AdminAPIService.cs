@@ -20,16 +20,39 @@ namespace VOD.Common.Services
             throw new NotImplementedException();
         }
 
-        public Task<int> CreateAsync<TSource, TDestination>(TSource item)
+        public async  Task<int> CreateAsync<TSource, TDestination>(TSource item)
             where TSource : class
             where TDestination : class
         {
-            throw new NotImplementedException();
+            try
+            {
+                GetProperties(item);
+                string uri = FormatUriWithIds<TDestination>();
+                var response = await _http.PostAsync<TSource,TSource>(item,
+                    uri, "AdminClient");
+                return (int)response.GetType().GetProperty("Id").GetValue(response);
+            }
+            catch
+            {
+
+                throw;
+            }
         }
 
-        public Task<bool> DeleteAsync<TSource>(Expression<Func<TSource, bool>> expression) where TSource : class
+        public async Task<bool> DeleteAsync<TSource>(Expression<Func<TSource, bool>> expression) where TSource : class
         {
-            throw new NotImplementedException();
+            try
+            {
+                GetProperties(expression);
+                string uri = FormatUriWithIds<TSource>();
+                var response = await _http.DeleteAsync( uri, "AdminClient");
+                return true;
+            }
+            catch
+            {
+                return false;
+
+            }
         }
 
         public async Task<List<TDestination>> GetAsync<TSource, TDestination>(bool include = false)
@@ -78,11 +101,23 @@ namespace VOD.Common.Services
             }
         }
 
-        public Task<bool> UpdateAsync<TSource, TDestination>(TSource item)
+        public async Task<bool> UpdateAsync<TSource, TDestination>(TSource item)
             where TSource : class
             where TDestination : class
         {
-            throw new NotImplementedException();
+            try
+            {
+                GetProperties(item);
+                string uri = FormatUriWithIds<TDestination>();
+                var response = await _http.PutAsync<TSource, TSource>(item,
+                    uri, "AdminClient");
+                return true;
+            }
+            catch
+            {
+                return false;
+                
+            }
         }
 
         private void GetProperties<TSource>()
@@ -104,6 +139,40 @@ namespace VOD.Common.Services
             if (courseId != null)
             {
                 _properties.Add("courseId", 0);
+            }
+        }
+        private void GetProperties<TSource>(TSource source)
+        {
+            try
+            {
+                _properties.Clear();
+                var type = source.GetType();
+                var idProperty = type.GetProperty("Id");
+                var moduleProperty = type.GetProperty("ModuleId");
+                var courseProperty = type.GetProperty("CourseId");
+
+                if (idProperty != null)
+                {
+                    var id = idProperty.GetValue(source);
+                    if (id != null && (int)id > 0) _properties.Add("id", id);
+                }
+                if (moduleProperty != null)
+                {
+                    var moduleId = moduleProperty.GetValue(source);
+                    if (moduleId != null && (int)moduleId > 0)
+                        _properties.Add("moduleId", moduleId);
+                }
+                if (courseProperty != null)
+                {
+                    var courseId = courseProperty.GetValue(source);
+                    if (courseId != null && (int)courseId > 0)
+                        _properties.Add("courseId", courseId);
+                }
+            }
+            catch 
+            {
+                _properties.Clear();
+                throw;
             }
         }
         private string FormatUriWithIds<TSource>()
