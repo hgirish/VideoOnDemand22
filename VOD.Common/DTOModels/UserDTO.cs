@@ -18,5 +18,6 @@ namespace VOD.Common.DTOModels
         [Display(Name ="Is Admin")]
         public bool IsAdmin { get; set; }
         public ButtonDTO ButtonDto { get { return new ButtonDTO(Id); }  }
+        public TokenDTO Token { get; set; }
     }
 }
