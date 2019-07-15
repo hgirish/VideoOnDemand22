@@ -3,17 +3,22 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
+using VOD.Common.DTOModels;
 
 namespace VOD.Common.Services
 {
     public class AdminAPIService : IAdminService
     {
         private readonly IHttpClientFactoryService _http;
+        private readonly IJwtTokenService _jwt;
+        TokenDTO token = new TokenDTO();
+
         Dictionary<string, object> _properties = new Dictionary<string, object>();
 
-        public AdminAPIService(IHttpClientFactoryService http)
+        public AdminAPIService(IHttpClientFactoryService http, IJwtTokenService jwt)
         {
             _http = http;
+            _jwt = jwt;
         }
         public Task<bool> AnyAsync<TEntity>(Expression<Func<TEntity, bool>> expression) where TEntity : class
         {
@@ -28,8 +33,9 @@ namespace VOD.Common.Services
             {
                 GetProperties(item);
                 string uri = FormatUriWithIds<TDestination>();
+                token = await _jwt.CheckTokenAsync(token);
                 var response = await _http.PostAsync<TSource,TSource>(item,
-                    uri, "AdminClient");
+                    uri, "AdminClient",token.Token);
                 return (int)response.GetType().GetProperty("Id").GetValue(response);
             }
             catch
@@ -45,7 +51,8 @@ namespace VOD.Common.Services
             {
                 GetProperties(expression);
                 string uri = FormatUriWithIds<TSource>();
-                var response = await _http.DeleteAsync( uri, "AdminClient");
+                token = await _jwt.CheckTokenAsync(token);
+                var response = await _http.DeleteAsync( uri, "AdminClient",token.Token);
                 return true;
             }
             catch
@@ -63,9 +70,10 @@ namespace VOD.Common.Services
             {
                 GetProperties<TSource>();
                 string uri = FormatUriWithoutIds<TSource>();
+                token = await _jwt.CheckTokenAsync(token);
 
                 return await _http.GetListAsync<TDestination>(
-                    $"{uri}?include={include.ToString()}", "AdminClient");
+                    $"{uri}?include={include.ToString()}", "AdminClient",token.Token);
 
             }
             catch 
@@ -90,8 +98,9 @@ namespace VOD.Common.Services
             {
                 GetProperties(expression);
                 string uri = FormatUriWithIds<TSource>();
+                token = await _jwt.CheckTokenAsync(token);
                 var result =  await _http.GetAsync<TDestination>(
-                    $"{uri}?include={include.ToString()}", "AdminClient");
+                    $"{uri}?include={include.ToString()}", "AdminClient",token.Token);
                 return result;
             }
             catch 
@@ -109,8 +118,9 @@ namespace VOD.Common.Services
             {
                 GetProperties(item);
                 string uri = FormatUriWithIds<TDestination>();
+                token = await _jwt.CheckTokenAsync(token);
                 var response = await _http.PutAsync<TSource, TSource>(item,
-                    uri, "AdminClient");
+                    uri, "AdminClient",token.Token);
                 return true;
             }
             catch

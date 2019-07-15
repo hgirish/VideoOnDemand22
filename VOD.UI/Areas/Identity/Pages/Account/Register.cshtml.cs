@@ -71,6 +71,13 @@ namespace VOD.UI.Areas.Identity.Pages.Account
                 {
                     _logger.LogInformation("User created a new account with password.");
 
+                    var identityResult = await _userManager.AddClaimAsync(user,
+                        new System.Security.Claims.Claim("VODUser", "true"));
+                    if (identityResult.Succeeded)
+                    {
+                        _logger.LogInformation("Added the VODUser Claim to the user");
+                    }
+
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     var callbackUrl = Url.Page(
                         "/Account/ConfirmEmail",

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -13,8 +14,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using VOD.API.Services;
 using VOD.Common.Entities;
+using VOD.Common.Extensions;
 using VOD.Common.Services;
 using VOD.Database.Contexts;
 using VOD.Database.Services;
@@ -40,6 +43,34 @@ namespace VOD.API
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<VODContext>();
 
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme =
+                JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme =
+                JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options =>
+            {
+                string signingSecret = Configuration["Jwt:SigningSecret"];
+                var base64SigningSecret = signingSecret.Base64Encode();
+
+              
+
+                var signingKey = new SymmetricSecurityKey(Convert.FromBase64String(
+                    base64SigningSecret));
+
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = signingKey,
+                    ClockSkew = TimeSpan.Zero
+                };
+                options.RequireHttpsMetadata = false;
+            });
+
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
@@ -55,6 +86,17 @@ namespace VOD.API
             services.AddScoped<IAdminService, AdminEFService>();
             services.AddScoped<IUserService, UserService>();
             services.AddTransient<ITokenService, TokenService>();
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("VODUser", policy =>
+                policy.RequireClaim("VODUser", "true"));
+
+                options.AddPolicy("Admin", policy =>
+                policy.RequireClaim("Admin", "true"));
+            });
+
+        
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -70,7 +112,9 @@ namespace VOD.API
                 app.UseHsts();
             }
 
-          //  app.UseHttpsRedirection();
+            //  app.UseHttpsRedirection();
+            app.UseAuthentication();
+
             app.UseMvc();
         }
     }

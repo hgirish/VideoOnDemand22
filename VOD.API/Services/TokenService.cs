@@ -8,6 +8,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using VOD.Common.DTOModels;
 using VOD.Common.Entities;
+using VOD.Common.Extensions;
 using VOD.Database.Services;
 
 namespace VOD.API.Services
@@ -88,17 +89,13 @@ namespace VOD.API.Services
             }
             return claims;
         }
-        public  string Base64Encode(string plainText)
-        {
-            var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
-            return System.Convert.ToBase64String(plainTextBytes);
-        }
+       
         private TokenDTO CreateToken(IList<Claim> claims)
         {
             try
             {
                 string signingSecret = _configuration["Jwt:SigningSecret"];
-                var base64SigningSecret = Base64Encode(signingSecret);
+                var base64SigningSecret = signingSecret.Base64Encode();
 
                 var signingKey = Convert.FromBase64String(
                     base64SigningSecret);

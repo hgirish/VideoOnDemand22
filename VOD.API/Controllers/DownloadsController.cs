@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
@@ -12,6 +13,7 @@ namespace VOD.API.Controllers
 {
     [Route("api/courses/{courseId}/modules/{moduleId}/[controller]")]
     [ApiController]
+    [Authorize(Policy = "Admin")]
     public class DownloadsController : ControllerBase
     {
         private readonly IAdminService _db;

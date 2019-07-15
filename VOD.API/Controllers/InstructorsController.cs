@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
@@ -13,6 +14,7 @@ namespace VOD.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Policy ="Admin")]
     public class InstructorsController : ControllerBase
     {
         private readonly IAdminService _db;

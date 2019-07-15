@@ -50,6 +50,8 @@ namespace VOD.Admin
             services.AddScoped<IDbWriteService, DbWriteService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IAdminService, AdminAPIService>();
+            services.AddScoped<IJwtTokenService, JwtTokenService>();
+
 
             services.AddAutoMapper(
                 typeof(Startup),
